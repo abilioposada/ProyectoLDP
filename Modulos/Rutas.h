@@ -9,7 +9,8 @@
 
 using namespace std;
 
-void listarRutas();
+vector<Ruta> listarRutas();
+void eliminarRuta();
 void agregarRuta();
 
 void irModuloRutas()
@@ -27,6 +28,9 @@ void irModuloRutas()
 		cout << "Elija opcion: ";
 		cin >> opcion;
 
+		// Limpia buffer
+		cin.ignore();
+
 		switch( opcion )
 		{
 			case 0: break;
@@ -40,6 +44,7 @@ void irModuloRutas()
 				break;
 				
 			case 3:
+				eliminarRuta();
 				break;
 				
 			default:
@@ -49,35 +54,46 @@ void irModuloRutas()
 	}
 }
 
+/**
+ * Función que carga las rutas de archivo externo
+ */
 vector<Ruta> cargarRutas()
 {
+	// Inicialización
 	ifstream archivo( "Archivos/Rutas.txt" );
-	string linea;
 	vector<Ruta> rutas = {};
+	string linea;
 	Ruta ruta;
 
+	// Si se abrió de manera correcta
 	if ( archivo.is_open() )
 	{
+		// Mientras no llegue al final del archivo
 		while ( !archivo.eof() )
 		{
 			ruta = Ruta();
 
 			getline( archivo, linea, ';' );
-			ruta.setId( stoi( linea ) );
 
-			getline( archivo, linea, ';' );
-			ruta.setOrigen( linea );
+			// Si la línea no está vacía
+			if ( !linea.empty() )
+			{
+				ruta.setId( stoi( linea ) );
 
-			getline( archivo, linea, ';' );
-			ruta.setDestino( linea );
+				getline( archivo, linea, ';' );
+				ruta.setOrigen( linea );
 
-			getline( archivo, linea, ';' );
-			ruta.setDuracion( stoi( linea ) );
+				getline( archivo, linea, ';' );
+				ruta.setDestino( linea );
 
-			getline( archivo, linea, '\n' );
-			ruta.setTarifa( stof( linea ) );
+				getline( archivo, linea, ';' );
+				ruta.setDuracion( stoi( linea ) );
 
-			rutas.push_back( ruta );
+				getline( archivo, linea, '\n' );
+				ruta.setTarifa( stof( linea ) );
+
+				rutas.push_back( ruta );
+			}
 		}
 
 		archivo.close();
@@ -85,24 +101,15 @@ vector<Ruta> cargarRutas()
 
 	else
 	{
-		cout << "Error al abrir el archivo.\n";
+		cout << "Error al abrir el archivo no se cargaron datos." << endl;
 	}
 
 	return rutas;
 }
 
-void listarRutas()
-{
-	vector<Ruta> rutas = cargarRutas();
-
-	cout << "LISTANDO RUTAS" << endl;
-
-	for ( Ruta ruta : rutas )
-	{
-		cout << ruta.toString() << endl;
-	}
-}
-
+/**
+ * Función que guarda las rutas en archivo externo
+ */
 bool guardarRutas( vector<Ruta> nuevasRutas )
 {
 	// Abre archivo para escritura y sobreescribe
@@ -122,26 +129,91 @@ bool guardarRutas( vector<Ruta> nuevasRutas )
 		return true;
 	}
 
-	cout << "Error en archivo" << endl;
+	cout << "Error en archivo." << endl;
 	return false;
 }
 
+/**
+ * Lista las rutas como cadena de caracteres
+ */
+vector<Ruta> listarRutas()
+{
+	// Inicialización
+	vector<Ruta> rutas = cargarRutas();
+
+	cout << "LISTANDO RUTAS" << endl;
+
+	for ( Ruta ruta : rutas )
+	{
+		cout << ruta.toString() << endl;
+	}
+
+	return rutas;
+}
+
+/**
+ * Solicita datos, agrega a lista y guarda cambios
+ */
 void agregarRuta()
 {
-	Ruta ruta = Ruta( 5, "El Salvador", "Guatemala", 30, 105 );
+	// Inicialización
+	string linea;
+	Ruta ruta = Ruta();
 	vector<Ruta> rutas = cargarRutas();
 
 	cout << "AGREGAR RUTA" << endl;
 
+	// Auto id
+	ruta.setId( rutas[ rutas.size() - 1 ].getId() + 1 );
+
+	cout << "Origen: ";
+	getline( cin, linea );
+	ruta.setOrigen( linea );
+
+	cout << "Destino: ";
+	getline( cin, linea );
+	ruta.setDestino( linea );
+
+	cout << "Duracion en minutos: ";
+	getline( cin, linea );
+	ruta.setDuracion( stoi( linea ) );
+
+	cout << "Tarifa en USD: ";
+	getline( cin, linea );
+	ruta.setTarifa( stof( linea ) );
+
 	rutas.push_back( ruta );
 
-	if ( guardarRutas( rutas ) )
+	cout << "Ruta agregada " << ( guardarRutas( rutas ) ? "correctamente" : "incorrectamente" ) << endl;
+}
+
+/**
+ * Elimina una ruta
+ */
+void eliminarRuta()
+{
+	int id;
+	vector<Ruta> rutas = listarRutas();
+
+	if ( !rutas.empty() )
 	{
-		cout << "Ruta agregada correctamente" << endl;
+		cout << "Digite id a eliminar: ";
+		cin >> id;
+		cin.ignore();
+
+		for ( int i = 0; i < rutas.size(); i++ )
+		{
+			if ( rutas[ i ].getId() == id )
+			{
+				rutas.erase( rutas.begin() + i );
+			}
+		}
+
+		cout << "Eliminación " << ( guardarRutas( rutas ) ? "exitosa" : "errónea" ) << endl;
 	}
 
 	else
 	{
-		cout << "No se pudo agregar la ruta" << endl;
+		cout << "No hay informacion" << endl;
 	}
 }
