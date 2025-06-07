@@ -60,8 +60,10 @@ class Persona
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString()
+		string toString( char separador = ' ' )
 		{
-			return this->getDoucmentoIdentidad() + " " + this->getNombre() + " " + this->getNacionalidad();
+			return this->getDoucmentoIdentidad() + separador +
+				this->getNombre() + separador +
+				this->getNacionalidad();
 		}
 };

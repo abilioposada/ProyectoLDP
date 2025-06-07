@@ -95,8 +95,12 @@ class Reserva
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString()
+		string toString( char separador = ' ' )
 		{
-			return this->getNumero() + " " + this->getFechaHora() + " " + to_string( static_cast<int> ( this->getEstado() ) ) + " " + this->getVuelo().toString() + " " + this->getPasajero().toString();
+			return this->getNumero() + separador +
+				this->getFechaHora() + separador +
+				to_string( static_cast<int> ( this->getEstado() ) ) + separador +
+				this->getVuelo().toString( separador ) + separador +
+				this->getPasajero().toString( separador );
 		}
 };

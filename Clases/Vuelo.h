@@ -121,8 +121,13 @@ class Vuelo
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString()
+		string toString( char separador = ' ' )
 		{
-			return this->getCodigo() + " " + this->getFechaHoraSalida() + " " + this->getFechaHoraLlegada() + " " + to_string( this->getCapacidad() ) + " " + this->getTipoAvion() + " " + this->getRuta().toString();
+			return this->getCodigo() + separador +
+				this->getFechaHoraSalida() + separador +
+				this->getFechaHoraLlegada() + separador +
+				to_string( this->getCapacidad() ) + separador +
+				this->getTipoAvion() + separador +
+				this->getRuta().toString();
 		}
 };

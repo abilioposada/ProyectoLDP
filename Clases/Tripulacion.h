@@ -76,8 +76,10 @@ class Tripulacion : public Persona
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString()
+		string toString( char separador = ' ' )
 		{
-			return this->getCodigo() + " " + Persona::toString() + " " + to_string( static_cast<int>( this->getRol() ) );
+			return this->getCodigo() + separador +
+				Persona::toString( separador ) + separador +
+				to_string( static_cast<int>( this->getRol() ) );
 		}
 };

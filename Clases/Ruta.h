@@ -38,7 +38,7 @@ class Ruta
 			return this->id;
 		}
 
-		void setId()
+		void setId( int id )
 		{
 			this->id = id;
 		}
@@ -58,7 +58,7 @@ class Ruta
 			return this->destino;
 		}
 
-		void setDestino()
+		void setDestino( string destino )
 		{
 			this->destino = destino;
 		}
@@ -86,8 +86,12 @@ class Ruta
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString()
+		string toString( char separador = ' ' )
 		{
-			return to_string( this->getId() ) + " " + this->getOrigen() + " " + this->getDestino() + " " + to_string( this->getDuracion() ) + " " + to_string( this->getTarifa() );
+			return to_string( this->getId() ) + separador +
+				this->getOrigen() + separador +
+				this->getDestino() + separador +
+				to_string( this->getDuracion() ) + separador +
+				to_string( this->getTarifa() );
 		}
 };

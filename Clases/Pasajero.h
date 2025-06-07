@@ -61,8 +61,10 @@ class Pasajero : public Persona
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString()
+		string toString( char separador )
 		{
-			return Persona::toString() + " " + this->getAsiento() + " " + ( this->getEstado() == Estado::VALIDADO ? "Validado" : "No validado" );
+			return Persona::toString( separador ) + separador +
+				this->getAsiento() + separador +
+				( this->getEstado() == Estado::VALIDADO ? "Validado" : "No validado" );
 		}
 };
