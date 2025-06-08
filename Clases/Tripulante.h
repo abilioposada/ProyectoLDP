@@ -8,9 +8,9 @@
 
 using namespace std;
 
-class Tripulacion : public Persona
+class Tripulante : public Persona
 {
-	enum class Rol { AUXILIAR, PILOTO, COPILOTO, SOBRECARGO };
+	public: enum class Rol { PILOTO = 1, COPILOTO = 2, AUXILIAR = 3 };
 
 	private:
 		string codigo;
@@ -22,7 +22,7 @@ class Tripulacion : public Persona
 		/**
 		 * Constructor
 		 */
-		Tripulacion(
+		Tripulante(
 			string doucmentoIdentidad = "",
 			string nombre = "",
 			string nacionalidad = "",
@@ -40,7 +40,7 @@ class Tripulacion : public Persona
 		/**
 		 * Destructor
 		 */
-		~Tripulacion() {}
+		~Tripulante() {}
 		
 		// Getters & setters
 		string getCodigo()
@@ -58,7 +58,7 @@ class Tripulacion : public Persona
 			return this->rol;
 		}
 
-		void setRol( Rol rol )
+		void setRol( Rol rol = Tripulante::Rol::AUXILIAR )
 		{
 			this->rol = rol;
 		}
@@ -76,10 +76,17 @@ class Tripulacion : public Persona
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString( char separador = ' ' )
+		string toString( string separador = " ", bool amigable = true )
 		{
 			return this->getCodigo() + separador +
 				Persona::toString( separador ) + separador +
-				to_string( static_cast<int>( this->getRol() ) );
+				( amigable ?
+					( this->getRol() == Rol::AUXILIAR ? "Auxiliar" :
+						(
+							this->getRol() == Rol::PILOTO ? "Piloto" : "Copiloto"
+						)
+					) :
+					to_string( static_cast<int>( this->getRol() ) )
+				);
 		}
 };
