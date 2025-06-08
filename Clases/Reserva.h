@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <string>   
+#include <iomanip>   
+#include <sstream>   
 
 #include "Vuelo.h"
 #include "Pasajero.h"
@@ -19,9 +22,7 @@ class Reserva
 		Pasajero pasajero;
 
 	public:
-		/**
-		 * Constructor con parámetros por defecto
-		 */
+		
 		Reserva(
 			string numero = "",
 			string fechaHora = "",
@@ -41,8 +42,7 @@ class Reserva
 		 */
 		~Reserva() {}
 
-		// Getters & setters
-		string getNumero()
+		string getNumero() const
 		{
 			return this->numero;
 		}
@@ -52,7 +52,7 @@ class Reserva
 			this->numero = numero;
 		}
 
-		string getFechaHora()
+		string getFechaHora() const
 		{
 			return this->fechaHora;
 		}
@@ -62,7 +62,7 @@ class Reserva
 			this->fechaHora = fechaHora;
 		}
 
-		Estado getEstado()
+		Estado getEstado() const
 		{
 			return this->estado;
 		}
@@ -72,7 +72,7 @@ class Reserva
 			this->estado = estado;
 		}
 
-		Vuelo getVuelo()
+		Vuelo getVuelo() const // Añadido 'const'
 		{
 			return this->vuelo;
 		}
@@ -82,7 +82,7 @@ class Reserva
 			this->vuelo = vuelo;
 		}
 
-		Pasajero getPasajero()
+		Pasajero getPasajero() const // Añadido 'const'
 		{
 			return this->pasajero;
 		}
@@ -92,18 +92,29 @@ class Reserva
 			this->pasajero = pasajero;
 		}
 
-		/**
-		 * Convierte el objeto a cadena de caracteres
-		 */
-		string toString( string separador = " ", bool amigable = true )
+	
+		string toString( string separador = " ", bool forDisplay = false ) const
 		{
-			return this->getNumero() + separador +
-				this->getFechaHora() + separador +
-				( amigable ?
-					( this->getEstado() == Estado::ADEUDADO ? "Adeudado" : "Pagado" ) :
-					to_string( static_cast<int>( this->getEstado() ) )
-				) + separador +
-				this->getVuelo().toString( separador ) + separador +
-				this->getPasajero().toString( separador );
+			if (forDisplay) {
+				stringstream ss;
+				ss << left << setw(10) << numero           
+				   << left << setw(20) << fechaHora;      
+
+				string estadoStr;
+				switch (estado) {
+					case Estado::ADEUDADO: estadoStr = "Adeudado"; break;
+					case Estado::PAGADO: estadoStr = "Pagado"; break;
+				}
+				ss << left << setw(15) << estadoStr
+				   << left << setw(10) << vuelo.getCodigo()           
+				   << left << setw(15) << pasajero.getDocumentoIdentidad(); 
+				return ss.str();
+			} else {
+				return this->numero + separador +
+					   this->fechaHora + separador +
+					   to_string( static_cast<int>(this->estado) ) + separador +
+					   this->vuelo.getCodigo() + separador + 
+					   this->pasajero.getDocumentoIdentidad();
+			}
 		}
 };

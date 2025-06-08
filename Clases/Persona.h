@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <string>    
+#include <iomanip>  
+#include <sstream>  
 
 using namespace std;
 
@@ -12,9 +15,7 @@ class Persona
 		string nacionalidad;
 
 	public:
-		/**
-		 * Constructor con parámetros por defecto
-		 */
+		
 		Persona( string documentoIdentidad = "", string nombre = "", string nacionalidad = "" )
 		{
 			this->documentoIdentidad = documentoIdentidad;
@@ -27,17 +28,17 @@ class Persona
 		 */
 		~Persona() {}
 
-		string getDoucmentoIdentidad()
+		string getDocumentoIdentidad() const 
 		{
 			return this->documentoIdentidad;
 		}
 
-		void setDoucumentoIdentidad( string documentoIdentidad )
+		void setDocumentoIdentidad( string documentoIdentidad ) 
 		{
 			this->documentoIdentidad = documentoIdentidad;
 		}
 
-		string getNombre()
+		string getNombre() const
 		{
 			return this->nombre;
 		}
@@ -47,7 +48,7 @@ class Persona
 			this->nombre = nombre;
 		}
 
-		string getNacionalidad()
+		string getNacionalidad() const
 		{
 			return this->nacionalidad;
 		}
@@ -57,13 +58,19 @@ class Persona
 			this->nacionalidad = nacionalidad;
 		}
 
-		/**
-		 * Convierte el objeto a cadena de caracteres
-		 */
-		string toString( string separador = " " )
+		
+		string toString( string separador = " ", bool forDisplay = false ) const
 		{
-			return this->getDoucmentoIdentidad() + separador +
-				this->getNombre() + separador +
-				this->getNacionalidad();
+			if (forDisplay) {
+				stringstream ss;
+				ss << left << setw(15) << documentoIdentidad
+				   << left << setw(25) << nombre
+				   << left << setw(20) << nacionalidad;
+				return ss.str();
+			} else {
+				return this->documentoIdentidad + separador +
+					   this->nombre + separador +
+					   this->nacionalidad;
+			}
 		}
 };

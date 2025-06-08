@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>
-// #include <vector>
+#include <string>   
+#include <iomanip>   
+#include <sstream>   
 
 #include "Persona.h"
-// #include "Vuelo.h"
 
 using namespace std;
 
@@ -14,36 +15,31 @@ class Tripulante : public Persona
 
 	private:
 		string codigo;
-		string nombre;
 		Rol rol;
-		// vector<Vuelo> vuelos;
 
 	public:
 		/**
 		 * Constructor
 		 */
 		Tripulante(
-			string doucmentoIdentidad = "",
+			string documentoIdentidad = "", 
 			string nombre = "",
 			string nacionalidad = "",
 			string codigo = "",
-			Rol rol = Rol::AUXILIAR/* ,
-			vector<Vuelo> vuelos = {} */
+			Rol rol = Rol::AUXILIAR
 		)
-			: Persona( doucmentoIdentidad, nombre, nacionalidad )
+			: Persona( documentoIdentidad, nombre, nacionalidad )
 		{
 			this->codigo = codigo;
 			this->rol = rol;
-			// this->vuelos = vuelos;
 		}
 
 		/**
 		 * Destructor
 		 */
 		~Tripulante() {}
-		
-		// Getters & setters
-		string getCodigo()
+
+		string getCodigo() const // Añadido 'const'
 		{
 			return this->codigo;
 		}
@@ -53,7 +49,7 @@ class Tripulante : public Persona
 			this->codigo = codigo;
 		}
 
-		Rol getRol()
+		Rol getRol() const // Añadido 'const'
 		{
 			return this->rol;
 		}
@@ -63,30 +59,30 @@ class Tripulante : public Persona
 			this->rol = rol;
 		}
 
-		/* vector<Vuelo> getVuelos()
-		{
-			return this->vuelos;
-		}
+		
 
-		void setVuelos( vector<Vuelo> vuelos )
+		
+		string toString( string separador = " ", bool forDisplay = false ) const
 		{
-			this->vuelos = vuelos;
-		} */
+			if (forDisplay) {
+				stringstream ss;
+			
+				ss << Persona::toString( separador, forDisplay )
+				   << left << setw(10) << codigo; 
 
-		/**
-		 * Convierte el objeto a cadena de caracteres
-		 */
-		string toString( string separador = " ", bool amigable = true )
-		{
-			return this->getCodigo() + separador +
-				Persona::toString( separador ) + separador +
-				( amigable ?
-					( this->getRol() == Rol::AUXILIAR ? "Auxiliar" :
-						(
-							this->getRol() == Rol::PILOTO ? "Piloto" : "Copiloto"
-						)
-					) :
-					to_string( static_cast<int>( this->getRol() ) )
-				);
+				string rolStr;
+				switch (rol) {
+					case Rol::PILOTO: rolStr = "Piloto"; break;
+					case Rol::COPILOTO: rolStr = "Copiloto"; break;
+					case Rol::AUXILIAR: rolStr = "Auxiliar"; break;
+				}
+				ss << left << setw(15) << rolStr; // Ancho para rol
+				return ss.str();
+			} else {
+				string cadena = Persona::toString( separador ); 
+				cadena += separador + this->codigo;
+				cadena += separador + to_string( static_cast<int>(this->rol) ); 
+				return cadena;
+			}
 		}
 };

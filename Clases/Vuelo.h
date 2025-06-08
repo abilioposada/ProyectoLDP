@@ -3,6 +3,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
+#include <iomanip> 
+#include <sstream>   
 
 #include "Ruta.h"
 #include "Tripulante.h"
@@ -17,13 +20,11 @@ class Vuelo
 		string fechaHoraLlegada;
 		int capacidad;
 		string tipoAvion;
-		Ruta ruta;
-		vector<Tripulante> tripulantes;
+		Ruta ruta; // Objeto Ruta
+		vector<Tripulante> tripulantes; 
 
 	public:
-		/**
-		 * Constructor con parámetros por defecto
-		 */
+		
 		Vuelo(
 			string codigo = "",
 			string fechaHoraSalida = "",
@@ -42,13 +43,10 @@ class Vuelo
 			this->tripulantes = tripulantes;
 		}
 
-		/**
-		 * Destructor
-		 */
+		
 		~Vuelo() {}
 
-		// Getters & setters
-		string getCodigo()
+		string getCodigo() const
 		{
 			return this->codigo;
 		}
@@ -58,7 +56,7 @@ class Vuelo
 			this->codigo = codigo;
 		}
 
-		string getFechaHoraSalida()
+		string getFechaHoraSalida() const
 		{
 			return this->fechaHoraSalida;
 		}
@@ -68,7 +66,7 @@ class Vuelo
 			this->fechaHoraSalida = fechaHoraSalida;
 		}
 
-		string getFechaHoraLlegada()
+		string getFechaHoraLlegada() const
 		{
 			return this->fechaHoraLlegada;
 		}
@@ -78,7 +76,7 @@ class Vuelo
 			this->fechaHoraLlegada = fechaHoraLlegada;
 		}
 
-		int getCapacidad()
+		int getCapacidad() const
 		{
 			return this->capacidad;
 		}
@@ -88,7 +86,7 @@ class Vuelo
 			this->capacidad = capacidad;
 		}
 
-		string getTipoAvion()
+		string getTipoAvion() const
 		{
 			return this->tipoAvion;
 		}
@@ -98,7 +96,7 @@ class Vuelo
 			this->tipoAvion = tipoAvion;
 		}
 
-		Ruta getRuta()
+		Ruta getRuta() const 
 		{
 			return this->ruta;
 		}
@@ -108,7 +106,7 @@ class Vuelo
 			this->ruta = ruta;
 		}
 
-		vector<Tripulante> getTripulantes()
+		vector<Tripulante> getTripulantes() const
 		{
 			return this->tripulantes;
 		}
@@ -118,16 +116,35 @@ class Vuelo
 			this->tripulantes = tripulantes;
 		}
 
-		/**
-		 * Convierte el objeto a cadena de caracteres
-		 */
-		string toString( string separador = " " )
+		
+		string toString( string separador = " ", bool forDisplay = false ) const
 		{
-			return this->getCodigo() + separador +
-				this->getFechaHoraSalida() + separador +
-				this->getFechaHoraLlegada() + separador +
-				to_string( this->getCapacidad() ) + separador +
-				this->getTipoAvion() + separador +
-				this->getRuta().toString();
+			if (forDisplay) {
+				stringstream ss;
+				ss << left << setw(10) << codigo           // Ancho para codigo
+				   << left << setw(20) << fechaHoraSalida  // Ancho para fecha/hora salida
+				   << left << setw(20) << fechaHoraLlegada // Ancho para fecha/hora llegada
+				   << right << setw(10) << capacidad       // Ancho para capacidad (alineado a la derecha)
+				   << left << setw(15) << tipoAvion        // Ancho para tipo de avión
+				   << left << setw(10) << ruta.getCodigo(); // Solo el codigo de la ruta para display
+				
+				return ss.str();
+			} else {
+				string tripulantesStr = "";
+				for ( const Tripulante& t : this->tripulantes ) {
+					tripulantesStr += t.getCodigo() + ","; 
+				}
+				if (!tripulantesStr.empty()) {
+					tripulantesStr.pop_back();
+				}
+
+				return this->codigo + separador +
+					   this->fechaHoraSalida + separador +
+					   this->fechaHoraLlegada + separador +
+					   to_string( this->capacidad ) + separador +
+					   this->tipoAvion + separador +
+					   this->ruta.getCodigo() + separador + 
+					   tripulantesStr;
+			}
 		}
 };

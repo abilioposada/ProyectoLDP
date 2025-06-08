@@ -1,6 +1,12 @@
 #include <iostream>
 
-void limpiarConsola();
+void limpiarConsola() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
 
 #include "Modulos/Rutas.h"
 #include "Modulos/Pasajeros.h"
@@ -54,23 +60,10 @@ int main()
 				break;
 
 			default:
-				cout << "No ha seleccionado una opcion valida" << endl << endl;
+				cout << "No ha seleccionado una opcion valida" << endl;
+				getchar();
 				break;
 		}
 	}
-
-	cout << "Gracias por utilizarnos" << endl;
-	getchar();
-
 	return 0;
-}
-
-
-void limpiarConsola()
-{
-	#ifdef _WIN32
-		system( "cls" );
-	#else
-		system( "clear" );
-	#endif
 }

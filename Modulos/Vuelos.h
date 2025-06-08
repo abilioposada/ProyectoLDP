@@ -4,240 +4,245 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <iomanip> 
 
 #include "../Clases/Vuelo.h"
+#include "Rutas.h"
+#include "Tripulantes.h"
 
 using namespace std;
 
-/**
- * Función que carga información de archivo externo
- */
+
 vector<Vuelo> cargarVuelos()
 {
-	// Inicialización
-	ifstream archivo( "Archivos/Vuelos.txt" );
-	vector<Vuelo> vuelos = {};
-	string linea;
-	Vuelo vuelo;
+    ifstream archivo( "Archivos/Vuelos.txt" );
+    vector<Vuelo> vuelos = {};
+    string linea;
+    Vuelo vuelo;
 
-	// Si se abrió de manera correcta
-	if ( archivo.is_open() )
-	{
-		// Mientras no llegue al final del archivo
-		while ( !archivo.eof() )
-		{
-			vuelo = Vuelo();
+    if ( archivo.is_open() )
+    {
+        while ( !archivo.eof() )
+        {
+            vuelo = Vuelo();
+            getline( archivo, linea, ';' );
+            if ( !linea.empty() )
+            {
+                vuelo.setCodigo( linea );
+                getline( archivo, linea, ';' );
+                vuelo.setFechaHoraSalida( linea );
+                getline( archivo, linea, ';' );
+                vuelo.setFechaHoraLlegada( linea );
+                getline( archivo, linea, ';' );
+                vuelo.setCapacidad( stoi( linea ) );
+                getline( archivo, linea, ';' );
+                vuelo.setTipoAvion( linea );
 
-			getline( archivo, linea, ';' );
+                // Cargar Ruta por codigo
+                getline( archivo, linea, ';' );
+                string codigoRuta = linea;
+                vector<Ruta> rutasExistentes = cargarRutas(); // Carga todas las rutas
+                for ( const Ruta& r : rutasExistentes ) {
+                    if ( r.getCodigo() == codigoRuta ) {
+                        vuelo.setRuta( r );
+                        break;
+                    }
+                }
 
-			// Si la línea no está vacía
-			if ( !linea.empty() )
-			{
-				vuelo.setCodigo( linea );
+                getline( archivo, linea, '\n' );
+                string tripulantesCodigosStr = linea;
+                vector<Tripulante> tripulantesVuelo;
+                if (!tripulantesCodigosStr.empty()) {
+                    stringstream ss(tripulantesCodigosStr);
+                    string tripulanteCodigo;
+                    vector<Tripulante> tripulantesExistentes = cargarTripulantes(); // Carga todos los tripulantes
+                    while (getline(ss, tripulanteCodigo, ',')) {
+                        for ( const Tripulante& t : tripulantesExistentes ) {
+                            if ( t.getCodigo() == tripulanteCodigo ) {
+                                tripulantesVuelo.push_back( t );
+                                break;
+                            }
+                        }
+                    }
+                }
+                vuelo.setTripulantes(tripulantesVuelo);
 
-				getline( archivo, linea, ';' );
-				vuelo.setFechaHoraSalida( linea );
-
-				getline( archivo, linea, ';' );
-				vuelo.setFechaHoraLlegada( linea );
-
-				getline( archivo, linea, ';' );
-				vuelo.setCapacidad( stoi( linea ) );
-
-				getline( archivo, linea, '\n' );
-				vuelo.setTipoAvion( linea );
-
-				vuelos.push_back( vuelo );
-			}
-		}
-
-		// Cerrar archivo
-		archivo.close();
-		archivo.clear();
-	}
-
-	else
-	{
-		cout << "Error al abrir el archivo no se cargaron datos." << endl;
-	}
-
-	return vuelos;
+                vuelos.push_back( vuelo );
+            }
+        }
+        archivo.close();
+        archivo.clear();
+    }
+    else
+    {
+        cout << "Error al abrir el archivo no se cargaron datos." << endl;
+    }
+    return vuelos;
 }
 
-/**
- * Función que guarda información en archivo externo
- */
-bool guardarRutas( vector<Vuelo> vuelos )
+
+bool guardarVuelos( vector<Vuelo> vuelos )
 {
-	// Abre archivo para escritura y sobreescribe
 	ofstream archivo( "Archivos/Vuelos.txt" );
-	
 	if ( archivo.is_open() )
 	{
-		for ( Vuelo vuelo : vuelos )
+		for ( const Vuelo& vuelo : vuelos )
 		{
-			archivo << vuelo.toString( ";" ) << endl;
+			archivo << vuelo.toString( ";" ) << endl; 
 		}
-		
-		// Limpia y cierra archivo de escritura
 		archivo.close();
 		archivo.clear();
-
 		return true;
 	}
-
 	cout << "Error en archivo." << endl;
 	return false;
 }
 
-/**
- * Muestra las información como cadena de caracteres y devuelve listado
- */
+
 vector<Vuelo> listarVuelos()
 {
-	// Inicialización
 	vector<Vuelo> vuelos = cargarVuelos();
 
 	cout << "LISTANDO VUELOS" << endl;
 
 	if ( !vuelos.empty() )
 	{
-		for ( Vuelo vuelo : vuelos )
+		cout << left << setw(10) << "CODIGO"
+		     << left << setw(20) << "SALIDA"
+		     << left << setw(20) << "LLEGADA"
+		     << right << setw(10) << "CAPACIDAD"
+		     << left << setw(15) << "TIPO AVION"
+		     << left << setw(10) << "RUTA" << endl;
+		cout << string(85, '-') << endl; 
+
+		for ( const Vuelo& vuelo : vuelos )
 		{
-			cout << vuelo.toString() << endl;
+			cout << vuelo.toString( " ", true ) << endl; 
 		}
 	}
-
 	else
 	{
 		cout << "No hay datos";
 	}
-
+	cout << endl;
 	return vuelos;
 }
 
-/**
- * Solicita datos, agrega a lista y guarda cambios
- */
+
 void solicitarVuelo( int indice = -1, vector<Vuelo> vuelos = cargarVuelos() )
 {
-	// Inicialización
-	string linea;
-	bool repetido = true;
-	Vuelo vuelo = Vuelo();
+    string linea;
+    bool repetido = true;
+    Vuelo vuelo = Vuelo();
 
-	cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " RUTA" << endl;
+    cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " VUELO" << endl;
 
-	// Mantiene identificador
-	if ( indice != -1 )
-	{
-		vuelo.setCodigo( vuelos[ indice ].getCodigo() );
-	}
+    if ( indice != -1 )
+    {
+        vuelo.setCodigo( vuelos[ indice ].getCodigo() );
+    }
+    else
+    {
+        while ( repetido )
+        {
+            repetido = false;
+            cout << "Codigo de vuelo: ";
+            getline( cin, linea );
+            for ( const Vuelo& v : vuelos )
+            {
+                if ( v.getCodigo() == linea )
+                {
+                    cout << "Dato duplicado, vuelva a intentar" << endl;
+                    repetido = true;
+                    break;
+                }
+            }
+        }
+        vuelo.setCodigo( linea );
+    }
 
-	else
-	{
-		// Verifica datos únicos
-		while ( repetido )
-		{
-			repetido = false;
+    do {
+        cout << "Fecha y Hora de Salida (AAAA-MM-DD HH:MM): ";
+        getline( cin, linea );
+        cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+    } while( linea == "" );
+    vuelo.setFechaHoraSalida( linea );
 
-			do {
-				cout << "Codigo de vuelo: ";
-				getline( cin, linea );
-				cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-			}
-			while( linea == "" );
+    do {
+        cout << "Fecha y Hora de Llegada (AAAA-MM-DD HH:MM): ";
+        getline( cin, linea );
+        cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+    } while( linea == "" );
+    vuelo.setFechaHoraLlegada( linea );
 
-			for ( Vuelo vuelo : vuelos )
-			{
-				if ( vuelo.getCodigo() == linea )
-				{
-					cout << "Dato duplicado, vuelva a intentar" << endl;
-					repetido = true;
-					break;
-				}
-			}
-		}
+    do {
+        cout << "Capacidad: ";
+        getline( cin, linea );
+        cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+    } while( linea == "" );
+    vuelo.setCapacidad( stoi( linea ) );
 
-		vuelo.setCodigo( linea );
-	}
+    do {
+        cout << "Tipo de Avión: ";
+        getline( cin, linea );
+        cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+    } while( linea == "" );
+    vuelo.setTipoAvion( linea );
 
-	// Origen
-	do {
-		cout << "Fecha y hora de salida: ";
-		getline( cin, linea );
-		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
+    // Selección de Ruta
+    vector<Ruta> rutasDisponibles = listarRutas(); // Muestra las rutas disponibles
+    if (!rutasDisponibles.empty()) {
+        string codigoRuta;
+        bool rutaEncontrada = false;
+        do {
+            cout << "Ingrese el codigo de la Ruta para el vuelo: ";
+            getline( cin, codigoRuta );
+            for ( const Ruta& r : rutasDisponibles ) {
+                if ( r.getCodigo() == codigoRuta ) {
+                    vuelo.setRuta( r );
+                    rutaEncontrada = true;
+                    break;
+                }
+            }
+            if (!rutaEncontrada) {
+                cout << "Codigo de ruta no encontrado. Intente de nuevo.\n";
+            }
+        } while( !rutaEncontrada );
+    } else {
+        cout << "No hay rutas disponibles. Por favor, agregue rutas primero." << endl;
+        getchar();
+        return; // Sale de la funcion si no hay rutas
+    }
 
-	vuelo.setFechaHoraSalida( linea );
+    
 
-	// Destino
-	do {
-		cout << "Fecha y hora de llegada: ";
-		getline( cin, linea );
-		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-	
-	vuelo.setFechaHoraLlegada( linea );
+    switch( indice )
+    {
+        case -1: vuelos.push_back( vuelo ); break;
+        default: vuelos[ indice ] = vuelo; break;
+    }
 
-	// Duracion
-	do {
-		cout << "Capacidad pasajeros: ";
-		getline( cin, linea );
-		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-	
-	vuelo.setCapacidad( stoi( linea ) );
-
-	// Tarifa
-	do {
-		cout << "Tipo de avion: ";
-		getline( cin, linea );
-		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-
-	vuelo.setTipoAvion( linea );
-
-	switch( indice )
-	{
-		// Agrega al final de la lista
-		case -1: vuelos.push_back( vuelo ); break;
-
-		// Reemplaza
-		default: vuelos[ indice ] = vuelo; break;
-	}
-
-	cout << "Acción realizada de manera " << ( guardarRutas( vuelos ) ? "exitosa" : "errónea" ) << endl;
+    cout << "Accion realizada de manera " << ( guardarVuelos( vuelos ) ? "exitosa" : "erronea" ) << endl;
 }
 
-/**
- * Validacion de una acción
- */
+
+
 void realizarAccionVuelo( string accion = "ELIMINAR" )
 {
-	cout << accion << " RUTA" << endl;
-
-	// Inicialización
+	cout << accion << " VUELO" << endl;
 	vector<Vuelo> vuelos = listarVuelos();
 	
 	if ( !vuelos.empty() )
 	{
 		string codigo = "";
 		bool encontrado = false;
-
-		// Solicita información
 		do {
-			cout << "Digite el codigo de la vuelo: ";
+			cout << "Digite el codigo del vuelo: ";
 			getline( cin, codigo );
 			cout << ( codigo == "" ? "Favor ingrese dato\n" : "" );
 		}
 		while( codigo == "" );
 
-		// Busca en listado el identificador
 		for ( int i = 0; i < vuelos.size(); i++ )
 		{
 			if ( encontrado = vuelos[ i ].getCodigo() == codigo )
@@ -245,24 +250,21 @@ void realizarAccionVuelo( string accion = "ELIMINAR" )
 				if ( accion == "ELIMINAR" )
 				{
 					vuelos.erase( vuelos.begin() + i );
-					cout << "Eliminación " << ( guardarRutas( vuelos ) ? "exitosa" : "errónea" ) << endl;
+					cout << "Eliminación " << ( guardarVuelos( vuelos ) ? "exitosa" : "errónea" ) << endl; 
 				}
-
 				else
 				{
 					solicitarVuelo( i, vuelos );
 				}
-
 				break;
 			}
 		}
-
 		cout << ( !encontrado ? "Identificador no encontrado\n" : "" );
 	}
 }
 
 /**
- * Submenú
+ * Submenu
  */
 void irModuloVuelos()
 {
@@ -276,11 +278,11 @@ void irModuloVuelos()
 		cout << "2) Agregar" << endl;
 		cout << "3) Editar" << endl;
 		cout << "4) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
+		cout << "0) Regresar" << endl << endl;
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
-		cin.ignore();
+		cin.ignore(); // Limpiar el buffer de entrada
 
 		switch( opcion )
 		{

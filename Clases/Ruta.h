@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <string>
+#include <iomanip>  
+#include <sstream>  
 
 using namespace std;
 
@@ -31,8 +34,7 @@ class Ruta
 		 */
 		~Ruta() {}
 
-		// Getters & setters
-		string getCodigo()
+		string getCodigo() const
 		{
 			return this->codigo;
 		}
@@ -42,7 +44,7 @@ class Ruta
 			this->codigo = codigo;
 		}
 
-		string getOrigen()
+		string getOrigen() const
 		{
 			return this->origen;
 		}
@@ -52,7 +54,7 @@ class Ruta
 			this->origen = origen;
 		}
 
-		string getDestino()
+		string getDestino() const
 		{
 			return this->destino;
 		}
@@ -62,7 +64,7 @@ class Ruta
 			this->destino = destino;
 		}
 
-		int getDuracion()
+		int getDuracion() const
 		{
 			return this->duracion;
 		}
@@ -72,7 +74,7 @@ class Ruta
 			this->duracion = duracion;
 		}
 
-		float getTarifa()
+		float getTarifa() const
 		{
 			return this->tarifa;
 		}
@@ -82,15 +84,23 @@ class Ruta
 			this->tarifa = tarifa;
 		}
 
-		/**
-		 * Convierte el objeto a cadena de caracteres
-		 */
-		string toString( string separador = " " )
+		
+		string toString( string separador = " ", bool forDisplay = false ) const
 		{
-			return this->getCodigo() + separador +
-				this->getOrigen() + separador +
-				this->getDestino() + separador +
-				to_string( this->getDuracion() ) + separador +
-				to_string( this->getTarifa() );
+			if (forDisplay) {
+				stringstream ss;
+				ss << left << setw(10) << codigo           
+				   << left << setw(15) << origen          
+				   << left << setw(15) << destino          
+				   << right << setw(10) << duracion      
+				   << right << setw(10) << fixed << setprecision(2) << tarifa;
+				return ss.str();
+			} else {
+				return this->codigo + separador +
+					   this->origen + separador +
+					   this->destino + separador +
+					   to_string( this->duracion ) + separador +
+					   to_string( this->tarifa );
+			}
 		}
 };

@@ -4,223 +4,182 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <iomanip>
 
-#include "../Clases/Pasajero.h"
+#include "../Clases/Pasajero.h" 
 
 using namespace std;
 
-/**
- * Función que carga las informacion de archivo externo
- */
+
 vector<Pasajero> cargarPasajeros()
 {
-	// Inicialización
 	ifstream archivo( "Archivos/Pasajeros.txt" );
 	vector<Pasajero> pasajeros = {};
 	Pasajero pasajero;
 	string linea;
 
-	// Si se abrió de manera correcta
 	if ( archivo.is_open() )
 	{
-		// Mientras no llegue al final del archivo
 		while ( !archivo.eof() )
 		{
 			pasajero = Pasajero();
-
 			getline( archivo, linea, ';' );
-
-			// Si la línea no está vacía
 			if ( !linea.empty() )
 			{
-				pasajero.setDoucumentoIdentidad( linea );
-
+				pasajero.setDocumentoIdentidad( linea );
 				getline( archivo, linea, ';' );
 				pasajero.setNombre( linea );
-
 				getline( archivo, linea, ';' );
 				pasajero.setNacionalidad( linea );
-
 				getline( archivo, linea, ';' );
 				pasajero.setAsiento( linea );
-
 				getline( archivo, linea, '\n' );
 				pasajero.setEstado( static_cast<Pasajero::Estado>( stoi( linea ) ) );
-
 				pasajeros.push_back( pasajero );
 			}
 		}
-
-		// Cerrar archivo
 		archivo.close();
 		archivo.clear();
 	}
-
 	else
 	{
 		cout << "Error al abrir el archivo no se cargaron datos." << endl;
 	}
-
 	return pasajeros;
 }
 
 /**
- * Función que guarda información en archivo externo
+ * Funcion que guarda información en archivo externo
  */
 bool guardarPasajeros( vector<Pasajero> pasajeros )
 {
-	// Abre archivo para escritura y sobreescribe
 	ofstream archivo( "Archivos/Pasajeros.txt" );
-	
 	if ( archivo.is_open() )
 	{
-		for ( Pasajero pasajero : pasajeros )
+		for ( const Pasajero& pasajero : pasajeros )
 		{
-			archivo << pasajero.toString( ";", false ) << endl;
+			archivo << pasajero.toString( ";" ) << endl; 
 		}
-		
-		// Limpia y cierra archivo de escritura
 		archivo.close();
 		archivo.clear();
-
 		return true;
 	}
-
 	cout << "Error en archivo." << endl;
 	return false;
 }
 
 /**
- * Muestra las información como cadena de caracteres y devuelve listado
+ * Muestra la informacion como cadena de caracteres y devuelve listado
  */
 vector<Pasajero> listarPasajeros()
 {
-	// Inicialización
 	vector<Pasajero> pasajeros = cargarPasajeros();
 
 	cout << "LISTANDO PASAJEROS" << endl;
 
 	if ( !pasajeros.empty() )
 	{
-		for ( Pasajero pasajero : pasajeros )
+		cout << left << setw(15) << "DOCUMENTO"
+		     << left << setw(25) << "NOMBRE"
+		     << left << setw(20) << "NACIONALIDAD"
+		     << left << setw(10) << "ASIENTO"
+		     << left << setw(15) << "ESTADO" << endl;
+		cout << string(85, '-') << endl;
+
+		for ( const Pasajero& pasajero : pasajeros )
 		{
-			cout << pasajero.toString() << endl;
+			cout << pasajero.toString( " ", true ) << endl;
 		}
 	}
-
 	else
 	{
 		cout << "No hay datos";
 	}
-
+	cout << endl;
 	return pasajeros;
 }
 
-/**
- * Solicita datos, agrega a lista y guarda cambios
- */
+
 void solicitarPasajero( int indice = -1, vector<Pasajero> pasajeros = cargarPasajeros() )
 {
-	// Inicialización
 	string linea;
+	bool repetido = true;
 	Pasajero pasajero = Pasajero();
 
 	cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " PASAJERO" << endl;
 
-	// Mantiene identificador
 	if ( indice != -1 )
 	{
-		pasajero.setDoucumentoIdentidad( pasajeros[ indice ].getDoucmentoIdentidad() );
+		pasajero.setDocumentoIdentidad( pasajeros[ indice ].getDocumentoIdentidad() ); 
 	}
-
 	else
 	{
-		// Verifica datos únicos
-		bool repetido = true;
-
 		while ( repetido )
 		{
 			repetido = false;
-
-			do {
-				cout << "Documento Identidad: ";
-				getline( cin, linea );
-				cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-			}
-			while( linea == "" );
-
-			for ( Pasajero pasajero : pasajeros )
+			cout << "Documento de identidad: ";
+			getline( cin, linea );
+			for ( const Pasajero& p : pasajeros )
 			{
-				if ( pasajero.getDoucmentoIdentidad() == linea )
+				if ( p.getDocumentoIdentidad() == linea ) 
 				{
-					repetido = true;
 					cout << "Dato duplicado, vuelva a intentar" << endl;
+					repetido = true;
 					break;
 				}
 			}
 		}
-
-		pasajero.setDoucumentoIdentidad( linea );
+		pasajero.setDocumentoIdentidad( linea ); 
 	}
 
-	// Nombre
 	do {
-		cout << "Nombre completo: ";
+		cout << "Nombre: ";
 		getline( cin, linea );
 		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-
+	} while( linea == "" );
 	pasajero.setNombre( linea );
 
-	// Nacionalidad
 	do {
 		cout << "Nacionalidad: ";
 		getline( cin, linea );
 		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-
+	} while( linea == "" );
 	pasajero.setNacionalidad( linea );
 
-	// Asiento
 	do {
-		cout << "Numero de asiento: ";
+		cout << "Asiento: ";
 		getline( cin, linea );
 		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-	
+	} while( linea == "" );
 	pasajero.setAsiento( linea );
+
+	int estadoOpcion;
+	cout << "Estado (1: NOVALIDADO, 2: VALIDADO): ";
+	cin >> estadoOpcion;
+	cin.ignore();
+	pasajero.setEstado( static_cast<Pasajero::Estado>( estadoOpcion - 1 ) ); 
 
 	switch( indice )
 	{
-		// Agrega al final de la lista
 		case -1: pasajeros.push_back( pasajero ); break;
-
-		// Reemplaza
 		default: pasajeros[ indice ] = pasajero; break;
 	}
 
-	cout << "Acción realizada de manera " << ( guardarPasajeros( pasajeros ) ? "exitosa" : "erronea" ) << endl;
+	cout << "Accion realizada de manera " << ( guardarPasajeros( pasajeros ) ? "exitosa" : "erronea" ) << endl;
 }
 
 /**
- * Validacion de una acción
+ * Validacion de una accion
  */
 void realizarAccionPasajero( string accion = "ELIMINAR" )
 {
 	cout << accion << " PASAJERO" << endl;
-
-	// Inicialización
 	vector<Pasajero> pasajeros = listarPasajeros();
 	
 	if ( !pasajeros.empty() )
 	{
 		string documento = "";
 		bool encontrado = false;
-
-		// Solicita información
 		do {
 			cout << "Digite el documento de identidad del pasajero: ";
 			getline( cin, documento );
@@ -228,32 +187,28 @@ void realizarAccionPasajero( string accion = "ELIMINAR" )
 		}
 		while( documento == "" );
 
-		// Busca en listado el identificador
 		for ( int i = 0; i < pasajeros.size(); i++ )
 		{
-			if ( encontrado = pasajeros[ i ].getDoucmentoIdentidad() == documento )
+			if ( encontrado = pasajeros[ i ].getDocumentoIdentidad() == documento ) 
 			{
 				if ( accion == "ELIMINAR" )
 				{
 					pasajeros.erase( pasajeros.begin() + i );
 					cout << "Eliminación " << ( guardarPasajeros( pasajeros ) ? "exitosa" : "errónea" ) << endl;
 				}
-
 				else
 				{
 					solicitarPasajero( i, pasajeros );
 				}
-
 				break;
 			}
 		}
-
 		cout << ( !encontrado ? "Identificador no encontrado\n" : "" );
 	}
 }
 
 /**
- * Submenú
+ * Submenu
  */
 void irModuloPasajeros()
 {
@@ -267,11 +222,11 @@ void irModuloPasajeros()
 		cout << "2) Agregar" << endl;
 		cout << "3) Editar" << endl;
 		cout << "4) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
+		cout << "0) Regresar" << endl << endl;
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
-		cin.ignore();
+		cin.ignore(); // Limpiar el buffer de entrada
 
 		switch( opcion )
 		{

@@ -4,149 +4,120 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <iomanip> 
 
-#include "../Clases/Tripulante.h"
+#include "../Clases/Tripulante.h" 
 
 using namespace std;
 
-/**
- * Función que carga las informacion de archivo externo
- */
+
 vector<Tripulante> cargarTripulantes()
 {
-	// Inicialización
 	ifstream archivo( "Archivos/Tripulantes.txt" );
 	vector<Tripulante> tripulantes = {};
 	Tripulante tripulante;
 	string linea;
 
-	// Si se abrió de manera correcta
 	if ( archivo.is_open() )
 	{
-		// Mientras no llegue al final del archivo
 		while ( !archivo.eof() )
 		{
 			tripulante = Tripulante();
-
 			getline( archivo, linea, ';' );
-
-			// Si la línea no está vacía
 			if ( !linea.empty() )
 			{
 				tripulante.setCodigo( linea );
-				
 				getline( archivo, linea, ';' );
-				tripulante.setDoucumentoIdentidad( linea );
-				
+				tripulante.setDocumentoIdentidad( linea ); 
 				getline( archivo, linea, ';' );
 				tripulante.setNombre( linea );
-				
 				getline( archivo, linea, ';' );
 				tripulante.setNacionalidad( linea );
-
 				getline( archivo, linea, '\n' );
 				tripulante.setRol( static_cast<Tripulante::Rol>( stoi( linea ) ) );
-
 				tripulantes.push_back( tripulante );
 			}
 		}
-
-		// Cerrar archivo
 		archivo.close();
 		archivo.clear();
 	}
-
 	else
 	{
 		cout << "Error al abrir el archivo no se cargaron datos." << endl;
 	}
-
 	return tripulantes;
 }
 
-/**
- * Función que guarda información en archivo externo
- */
+
 bool guardarTripulantes( vector<Tripulante> tripulantes )
 {
-	// Abre archivo para escritura y sobreescribe
 	ofstream archivo( "Archivos/Tripulantes.txt" );
-	
 	if ( archivo.is_open() )
 	{
-		for ( Tripulante tripulante : tripulantes )
+		for ( const Tripulante& tripulante : tripulantes )
 		{
-			archivo << tripulante.toString( ";", false ) << endl;
+			archivo << tripulante.toString( ";" ) << endl; 
 		}
-		
-		// Limpia y cierra archivo de escritura
 		archivo.close();
 		archivo.clear();
-
 		return true;
 	}
-
 	cout << "Error en archivo." << endl;
 	return false;
 }
 
-/**
- * Muestra las información como cadena de caracteres y devuelve listado
- */
+
 vector<Tripulante> listarTripulantes()
 {
-	// Inicialización
 	vector<Tripulante> tripulantes = cargarTripulantes();
 
 	cout << "LISTANDO TRIPULANTES" << endl;
 
 	if ( !tripulantes.empty() )
 	{
-		for ( Tripulante tripulante : tripulantes )
+		cout << left << setw(15) << "DOCUMENTO"
+		     << left << setw(25) << "NOMBRE"
+		     << left << setw(20) << "NACIONALIDAD"
+		     << left << setw(10) << "CODIGO"
+		     << left << setw(15) << "ROL" << endl;
+		cout << string(90, '-') << endl; 
+
+		for ( const Tripulante& tripulante : tripulantes )
 		{
-			cout << tripulante.toString() << endl;
+			cout << tripulante.toString( " ", true ) << endl; 
 		}
 	}
-
 	else
 	{
 		cout << "No hay datos";
 	}
-
+	cout << endl;
 	return tripulantes;
 }
 
-/**
- * Solicita datos, agrega a lista y guarda cambios
- */
+
 void solicitarTripulante( int indice = -1, vector<Tripulante> tripulantes = cargarTripulantes() )
 {
-	// Inicialización
 	string linea;
 	bool repetido = true;
 	Tripulante tripulante = Tripulante();
 
 	cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " TRIPULANTE" << endl;
 
-	// Mantiene identificador
 	if ( indice != -1 )
 	{
 		tripulante.setCodigo( tripulantes[ indice ].getCodigo() );
 	}
-
 	else
 	{
-		// Verifica datos únicos
 		while ( repetido )
 		{
 			repetido = false;
-
 			cout << "Codigo de tripulante: ";
 			getline( cin, linea );
-
-			for ( Tripulante tripulante : tripulantes )
+			for ( const Tripulante& t : tripulantes )
 			{
-				if ( tripulante.getCodigo() == linea )
+				if ( t.getCodigo() == linea )
 				{
 					cout << "Dato duplicado, vuelva a intentar" << endl;
 					repetido = true;
@@ -154,103 +125,55 @@ void solicitarTripulante( int indice = -1, vector<Tripulante> tripulantes = carg
 				}
 			}
 		}
-
 		tripulante.setCodigo( linea );
 	}
 
-	// Documento identidad único
 	do {
-		repetido = false;
-
-		do {
-			cout << "Documento Identidad: ";
-			getline( cin, linea );
-			cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-		}
-		while( linea == "" );
-
-		for ( Tripulante tripulante : tripulantes )
-		{
-			if ( tripulante.getDoucmentoIdentidad() == linea )
-			{
-				cout << "Dato duplicado, vuelva a intentar" << endl;
-				repetido = true;
-				break;
-			}
-		}
-	}
-	while ( repetido );
-
-	tripulante.setDoucumentoIdentidad( linea );
-
-	// Nombre
-	do {
-		cout << "Nombre completo: ";
+		cout << "Documento de identidad: ";
 		getline( cin, linea );
 		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
+	} while( linea == "" );
+	tripulante.setDocumentoIdentidad( linea ); 
 
+	do {
+		cout << "Nombre: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	} while( linea == "" );
 	tripulante.setNombre( linea );
 
-	// Nacionalidad
 	do {
 		cout << "Nacionalidad: ";
 		getline( cin, linea );
 		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-
+	} while( linea == "" );
 	tripulante.setNacionalidad( linea );
 
-	// Rol
-	do {
-		cout << "Digite numero de rol:" << endl;
-		cout << "1. Piloto" << endl;
-		cout << "2. Copiloto" << endl;
-		cout << "3. Auxiliar" << endl;
-		
-		getline( cin, linea );
-		
-		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
-	}
-	while( linea == "" );
-
-	switch ( stoi( linea ) )
-	{
-		case 1: tripulante.setRol( Tripulante::Rol::PILOTO ); break;
-		case 2: tripulante.setRol( Tripulante::Rol::COPILOTO ); break;
-		default: tripulante.setRol( Tripulante::Rol::AUXILIAR ); break;
-	};
+	int rolOpcion;
+	cout << "Rol (1: PILOTO, 2: COPILOTO, 3: AUXILIAR): ";
+	cin >> rolOpcion;
+	cin.ignore();
+	tripulante.setRol( static_cast<Tripulante::Rol>( rolOpcion ) );
 
 	switch( indice )
 	{
-		// Agrega al final de la lista
 		case -1: tripulantes.push_back( tripulante ); break;
-
-		// Reemplaza
 		default: tripulantes[ indice ] = tripulante; break;
 	}
 
 	cout << "Accion realizada de manera " << ( guardarTripulantes( tripulantes ) ? "exitosa" : "erronea" ) << endl;
 }
 
-/**
- * Validacion de una acción
- */
+
 void realizarAccionTripulante( string accion = "ELIMINAR" )
 {
 	cout << accion << " TRIPULANTE" << endl;
-
-	// Inicialización
 	vector<Tripulante> tripulantes = listarTripulantes();
 	
 	if ( !tripulantes.empty() )
 	{
 		string codigo = "";
 		bool encontrado = false;
-
-		// Solicita información
 		do {
 			cout << "Digite el codigo del tripulante: ";
 			getline( cin, codigo );
@@ -258,7 +181,6 @@ void realizarAccionTripulante( string accion = "ELIMINAR" )
 		}
 		while( codigo == "" );
 
-		// Busca en listado el identificador
 		for ( int i = 0; i < tripulantes.size(); i++ )
 		{
 			if ( encontrado = tripulantes[ i ].getCodigo() == codigo )
@@ -268,22 +190,19 @@ void realizarAccionTripulante( string accion = "ELIMINAR" )
 					tripulantes.erase( tripulantes.begin() + i );
 					cout << "Eliminacion " << ( guardarTripulantes( tripulantes ) ? "exitosa" : "erronea" ) << endl;
 				}
-
 				else
 				{
 					solicitarTripulante( i, tripulantes );
 				}
-
 				break;
 			}
 		}
-
 		cout << ( !encontrado ? "Identificador no encontrado\n" : "" );
 	}
 }
 
 /**
- * Submenú
+ * Submenu
  */
 void irModuloTripulantes()
 {
@@ -297,11 +216,11 @@ void irModuloTripulantes()
 		cout << "2) Agregar" << endl;
 		cout << "3) Editar" << endl;
 		cout << "4) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
+		cout << "0) Regresar" << endl << endl;
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
-		cin.ignore();
+		cin.ignore(); // Limpiar el buffer de entrada
 
 		switch( opcion )
 		{

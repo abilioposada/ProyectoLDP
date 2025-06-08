@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <string>    
+#include <iomanip>   
+#include <sstream>   
 
 #include "Persona.h"
 
@@ -8,7 +11,7 @@ using namespace std;
 
 class Pasajero : public Persona
 {
-	public: enum class Estado { NOVALIDADO, VALIDADO };
+	public: enum class Estado { NOVALIDADO, VALIDADO }; // Cambiado el nombre de los estados para mejor legibilidad
 
 	private:
 		string asiento;
@@ -35,9 +38,8 @@ class Pasajero : public Persona
 		 * Destructor
 		 */
 		~Pasajero() {}
-		
-		// Getters & setters
-		string getAsiento()
+
+		string getAsiento() const // Añadido 'const'
 		{
 			return this->asiento;
 		}
@@ -47,7 +49,7 @@ class Pasajero : public Persona
 			this->asiento = asiento;
 		}
 
-		Estado getEstado()
+		Estado getEstado() const 
 		{
 			return this->estado;
 		}
@@ -57,16 +59,26 @@ class Pasajero : public Persona
 			this->estado = estado;
 		}
 
-		/**
-		 * Convierte el objeto a cadena de caracteres
-		 */
-		string toString( string separador = " ", bool amigable = true )
+		
+		string toString( string separador = " ", bool forDisplay = false ) const
 		{
-			return Persona::toString( separador ) + separador +
-				this->getAsiento() + separador +
-				( amigable ?
-					( this->getEstado() == Estado::VALIDADO ? "Validado" : "No validado" ) :
-					to_string( static_cast<int>( this->getEstado() ) )
-				);
+			if (forDisplay) {
+				stringstream ss;
+				ss << Persona::toString( separador, forDisplay )
+				   << left << setw(10) << asiento; 
+
+				string estadoStr;
+				switch (estado) {
+					case Estado::NOVALIDADO: estadoStr = "No Validado"; break;
+					case Estado::VALIDADO: estadoStr = "Validado"; break;
+				}
+				ss << left << setw(15) << estadoStr; 
+				return ss.str();
+			} else {
+				string cadena = Persona::toString( separador ); 
+				cadena += separador + this->asiento;
+				cadena += separador + to_string( static_cast<int>(this->estado) ); 
+				return cadena;
+			}
 		}
 };
