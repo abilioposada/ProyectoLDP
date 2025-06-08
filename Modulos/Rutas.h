@@ -117,6 +117,43 @@ vector<Ruta> listarRutas()
 }
 
 /**
+ * Busca, muestra y retorna
+ */
+Ruta buscarRuta()
+{
+	cout << "BUSCAR RUTA" << endl;
+
+	// Inicialización
+	string texto = "";
+	bool encontrado = false;
+	vector<Ruta> rutas = cargarRutas();
+
+	do {
+		cout << "Ruta a buscar: ";
+		getline( cin, texto );
+		cout << ( texto == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( texto == "" );
+
+	// Busca en listado el texto
+	for ( Ruta ruta : rutas )
+	{
+		if (
+			ruta.getDestino() == texto ||
+			ruta.getCodigo() == texto ||
+			ruta.getOrigen() == texto
+		) {
+			cout << "El primer resultado que se encontro fue:" << endl;
+			cout << ruta.toString() << endl;
+			return ruta;
+		}
+	}
+
+	cout << "No encontrado" << endl;
+	return Ruta();
+}
+
+/**
  * Solicita datos, agrega a lista y guarda cambios
  */
 void solicitarRuta( int indice = -1, vector<Ruta> rutas = cargarRutas() )
@@ -273,10 +310,11 @@ void irModuloRutas()
 		limpiarConsola();
 		cout << "MODULO RUTAS" << endl;
 		cout << "1) Listar" << endl;
-		cout << "2) Agregar" << endl;
-		cout << "3) Editar" << endl;
-		cout << "4) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
+		cout << "2) Buscar" << endl;
+		cout << "3) Agregar" << endl;
+		cout << "4) Editar" << endl;
+		cout << "5) Eliminar" << endl;
+		cout << "0) Regresar" << endl << endl;
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
@@ -292,16 +330,21 @@ void irModuloRutas()
 				break;
 				
 			case 2:
+				buscarRuta();
+				getchar();
+				break;
+
+			case 3:
 				solicitarRuta();
 				getchar();
 				break;
 				
-			case 3:
+			case 4:
 				realizarAccionRuta( "EDITAR" );
 				getchar();
 				break;
 			
-			case 4:
+			case 5:
 				realizarAccionRuta( "ELIMINAR" );
 				getchar();
 				break;

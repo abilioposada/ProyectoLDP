@@ -117,6 +117,44 @@ vector<Tripulante> listarTripulantes()
 }
 
 /**
+ * Busca, muestra y retorna
+ */
+Tripulante buscarTripulante()
+{
+	cout << "BUSCAR TRIPULANTE" << endl;
+
+	// Inicialización
+	string texto = "";
+	bool encontrado = false;
+	vector<Tripulante> tripulantes = cargarTripulantes();
+
+	do {
+		cout << "Tripulante a buscar: ";
+		getline( cin, texto );
+		cout << ( texto == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( texto == "" );
+
+	// Busca en listado el texto
+	for ( Tripulante tripulante : tripulantes)
+	{
+		if (
+			tripulante.getDoucmentoIdentidad() == texto ||
+			tripulante.getNacionalidad() == texto ||
+			tripulante.getCodigo() == texto ||
+			tripulante.getNombre() == texto
+		) {
+			cout << "El primer resultado que se encontro fue:" << endl;
+			cout << tripulante.toString() << endl;
+			return tripulante;
+		}
+	}
+
+	cout << "No encontrado" << endl;
+	return Tripulante();
+}
+
+/**
  * Solicita datos, agrega a lista y guarda cambios
  */
 void solicitarTripulante( int indice = -1, vector<Tripulante> tripulantes = cargarTripulantes() )
@@ -294,10 +332,11 @@ void irModuloTripulantes()
 		limpiarConsola();
 		cout << "MODULO TRIPULANTES" << endl;
 		cout << "1) Listar" << endl;
-		cout << "2) Agregar" << endl;
-		cout << "3) Editar" << endl;
-		cout << "4) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
+		cout << "2) Buscar" << endl;
+		cout << "3) Agregar" << endl;
+		cout << "4) Editar" << endl;
+		cout << "5) Eliminar" << endl;
+		cout << "0) Regresar" << endl << endl;
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
@@ -313,16 +352,21 @@ void irModuloTripulantes()
 				break;
 				
 			case 2:
+				buscarTripulante();
+				getchar();
+				break;
+
+			case 3:
 				solicitarTripulante();
 				getchar();
 				break;
 				
-			case 3:
+			case 4:
 				realizarAccionTripulante( "EDITAR" );
 				getchar();
 				break;
 			
-			case 4:
+			case 5:
 				realizarAccionTripulante( "ELIMINAR" );
 				getchar();
 				break;

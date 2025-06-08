@@ -62,7 +62,7 @@ vector<Reserva> cargarReservas()
 /**
  * Función que guarda información en archivo externo
  */
-bool guardarRutas( vector<Reserva> reservas )
+bool guardarReservas( vector<Reserva> reservas )
 {
 	// Abre archivo para escritura y sobreescribe
 	ofstream archivo( "Archivos/Reservas.txt" );
@@ -71,7 +71,7 @@ bool guardarRutas( vector<Reserva> reservas )
 	{
 		for ( Reserva reserva : reservas )
 		{
-			archivo << reserva.toString( ";" ) << endl;
+			archivo << reserva.toString( ";", false ) << endl;
 		}
 		
 		// Limpia y cierra archivo de escritura
@@ -112,6 +112,42 @@ vector<Reserva> listarReservas()
 }
 
 /**
+ * Busca, muestra y retorna
+ */
+Reserva buscarReserva()
+{
+	cout << "BUSCAR RESERVA" << endl;
+
+	// Inicialización
+	string texto = "";
+	bool encontrado = false;
+	vector<Reserva> reservas = cargarReservas();
+
+	do {
+		cout << "Reserva a buscar: ";
+		getline( cin, texto );
+		cout << ( texto == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( texto == "" );
+
+	// Busca en listado el texto
+	for ( Reserva reserva : reservas )
+	{
+		if (
+			reserva.getFechaHora() == texto ||
+			reserva.getNumero() == texto
+		) {
+			cout << "El primer resultado que se encontro fue:" << endl;
+			cout << reserva.toString() << endl;
+			return reserva;
+		}
+	}
+
+	cout << "No encontrado" << endl;
+	return Reserva();
+}
+
+/**
  * Solicita datos, agrega a lista y guarda cambios
  */
 void solicitarReserva( int indice = -1, vector<Reserva> reservas = cargarReservas() )
@@ -121,7 +157,7 @@ void solicitarReserva( int indice = -1, vector<Reserva> reservas = cargarReserva
 	bool repetido = true;
 	Reserva reserva = Reserva();
 
-	cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " RUTA" << endl;
+	cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " RESERVA" << endl;
 
 	// Mantiene identificador
 	if ( indice != -1 )
@@ -196,7 +232,7 @@ void solicitarReserva( int indice = -1, vector<Reserva> reservas = cargarReserva
 		default: reservas[ indice ] = reserva; break;
 	}
 
-	cout << "Acción realizada de manera " << ( guardarRutas( reservas ) ? "exitosa" : "errónea" ) << endl;
+	cout << "Acción realizada de manera " << ( guardarReservas( reservas ) ? "exitosa" : "errónea" ) << endl;
 }
 
 /**
@@ -204,7 +240,7 @@ void solicitarReserva( int indice = -1, vector<Reserva> reservas = cargarReserva
  */
 void realizarAccionReserva( string accion = "ELIMINAR" )
 {
-	cout << accion << " RUTA" << endl;
+	cout << accion << " RESERVA" << endl;
 
 	// Inicialización
 	vector<Reserva> reservas = listarReservas();
@@ -230,7 +266,7 @@ void realizarAccionReserva( string accion = "ELIMINAR" )
 				if ( accion == "ELIMINAR" )
 				{
 					reservas.erase( reservas.begin() + i );
-					cout << "Eliminación " << ( guardarRutas( reservas ) ? "exitosa" : "errónea" ) << endl;
+					cout << "Eliminación " << ( guardarReservas( reservas ) ? "exitosa" : "errónea" ) << endl;
 				}
 
 				else
@@ -258,10 +294,11 @@ void irModuloReservas()
 		limpiarConsola();
 		cout << "MODULO RESERVAS" << endl;
 		cout << "1) Listar" << endl;
-		cout << "2) Agregar" << endl;
-		cout << "3) Editar" << endl;
-		cout << "4) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
+		cout << "2) Buscar" << endl;
+		cout << "3) Agregar" << endl;
+		cout << "4) Editar" << endl;
+		cout << "5) Eliminar" << endl;
+		cout << "0) Regresar" << endl << endl;
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
@@ -275,18 +312,23 @@ void irModuloReservas()
 				listarReservas();
 				getchar();
 				break;
-				
+
 			case 2:
-				solicitarReserva();
+				buscarReserva();
 				getchar();
 				break;
 				
 			case 3:
+				solicitarReserva();
+				getchar();
+				break;
+				
+			case 4:
 				realizarAccionReserva( "EDITAR" );
 				getchar();
 				break;
 			
-			case 4:
+			case 5:
 				realizarAccionReserva( "ELIMINAR" );
 				getchar();
 				break;

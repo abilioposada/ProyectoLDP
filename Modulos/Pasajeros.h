@@ -117,6 +117,44 @@ vector<Pasajero> listarPasajeros()
 }
 
 /**
+ * Busca, muestra y retorna
+ */
+Pasajero buscarPasajero()
+{
+	cout << "BUSCAR PASAJERO" << endl;
+
+	// Inicialización
+	string texto = "";
+	bool encontrado = false;
+	vector<Pasajero> pasajeros = cargarPasajeros();
+
+	do {
+		cout << "Pasajero a buscar: ";
+		getline( cin, texto );
+		cout << ( texto == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( texto == "" );
+
+	// Busca en listado el texto
+	for ( Pasajero pasajero : pasajeros )
+	{
+		if (
+			pasajero.getDoucmentoIdentidad() == texto ||
+			pasajero.getNacionalidad() == texto ||
+			pasajero.getAsiento() == texto ||
+			pasajero.getNombre() == texto
+		) {
+			cout << "El primer resultado que se encontro fue:" << endl;
+			cout << pasajero.toString() << endl;
+			return pasajero;
+		}
+	}
+
+	cout << "No encontrado" << endl;
+	return Pasajero();
+}
+
+/**
  * Solicita datos, agrega a lista y guarda cambios
  */
 void solicitarPasajero( int indice = -1, vector<Pasajero> pasajeros = cargarPasajeros() )
@@ -264,10 +302,11 @@ void irModuloPasajeros()
 		limpiarConsola();
 		cout << "MODULO PASAJEROS" << endl;
 		cout << "1) Listar" << endl;
-		cout << "2) Agregar" << endl;
-		cout << "3) Editar" << endl;
-		cout << "4) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
+		cout << "2) Buscar" << endl;
+		cout << "3) Agregar" << endl;
+		cout << "4) Editar" << endl;
+		cout << "5) Eliminar" << endl;
+		cout << "0) Regresar" << endl << endl;
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
@@ -283,16 +322,21 @@ void irModuloPasajeros()
 				break;
 				
 			case 2:
+				buscarPasajero();
+				getchar();
+				break;
+			
+			case 3:
 				solicitarPasajero();
 				getchar();
 				break;
 				
-			case 3:
+			case 4:
 				realizarAccionPasajero( "EDITAR" );
 				getchar();
 				break;
 			
-			case 4:
+			case 5:
 				realizarAccionPasajero( "ELIMINAR" );
 				getchar();
 				break;
