@@ -9,51 +9,6 @@
 
 using namespace std;
 
-vector<Ruta> listarRutas();
-void eliminarRuta();
-void agregarRuta();
-
-void irModuloRutas()
-{
-	int opcion = 1;
-
-	while( opcion != 0 )
-	{
-		cout << "MODULO RUTAS" << endl;
-		cout << "1) Listar" << endl;
-		cout << "2) Agregar" << endl;
-		cout << "3) Eliminar" << endl;
-		cout << "0) Regresar" << endl;
-
-		cout << "Elija opcion: ";
-		cin >> opcion;
-
-		// Limpia buffer
-		cin.ignore();
-
-		switch( opcion )
-		{
-			case 0: break;
-			
-			case 1:
-				listarRutas();
-				break;
-				
-			case 2:
-				agregarRuta();
-				break;
-				
-			case 3:
-				eliminarRuta();
-				break;
-				
-			default:
-				cout << "No ha seleccionado opcion valida" << endl << endl;
-				break;
-		}
-	}
-}
-
 /**
  * Función que carga las rutas de archivo externo
  */
@@ -134,7 +89,7 @@ bool guardarRutas( vector<Ruta> nuevasRutas )
 }
 
 /**
- * Lista las rutas como cadena de caracteres
+ * Muestra las rutas como cadena de caracteres y devuelve listado
  */
 vector<Ruta> listarRutas()
 {
@@ -143,9 +98,17 @@ vector<Ruta> listarRutas()
 
 	cout << "LISTANDO RUTAS" << endl;
 
-	for ( Ruta ruta : rutas )
+	if ( !rutas.empty() )
 	{
-		cout << ruta.toString() << endl;
+		for ( Ruta ruta : rutas )
+		{
+			cout << ruta.toString() << endl;
+		}
+	}
+
+	else
+	{
+		cout << "No hay datos";
 	}
 
 	return rutas;
@@ -154,17 +117,16 @@ vector<Ruta> listarRutas()
 /**
  * Solicita datos, agrega a lista y guarda cambios
  */
-void agregarRuta()
+void solicitarRuta( int indice = 0, vector<Ruta> rutas = cargarRutas() )
 {
 	// Inicialización
 	string linea;
 	Ruta ruta = Ruta();
-	vector<Ruta> rutas = cargarRutas();
 
-	cout << "AGREGAR RUTA" << endl;
+	cout << ( indice != 0 ? "EDITAR" : "AGREGAR" ) << " RUTA" << endl;
 
 	// Auto id
-	ruta.setId( rutas[ rutas.size() - 1 ].getId() + 1 );
+	ruta.setId( indice != 0 ? rutas[ indice ].getId() : ( rutas.empty() ? 1 : rutas[ rutas.size() - 1 ].getId() + 1 ) );
 
 	cout << "Origen: ";
 	getline( cin, linea );
@@ -182,38 +144,112 @@ void agregarRuta()
 	getline( cin, linea );
 	ruta.setTarifa( stof( linea ) );
 
-	rutas.push_back( ruta );
-
-	cout << "Ruta agregada " << ( guardarRutas( rutas ) ? "correctamente" : "incorrectamente" ) << endl;
-}
-
-/**
- * Elimina una ruta
- */
-void eliminarRuta()
-{
-	int id;
-	vector<Ruta> rutas = listarRutas();
-
-	if ( !rutas.empty() )
+	if ( indice != 0 )
 	{
-		cout << "Digite id a eliminar: ";
-		cin >> id;
-		cin.ignore();
-
-		for ( int i = 0; i < rutas.size(); i++ )
-		{
-			if ( rutas[ i ].getId() == id )
-			{
-				rutas.erase( rutas.begin() + i );
-			}
-		}
-
-		cout << "Eliminación " << ( guardarRutas( rutas ) ? "exitosa" : "errónea" ) << endl;
+		rutas[ indice ] = ruta;
 	}
 
 	else
 	{
-		cout << "No hay informacion" << endl;
+		rutas.push_back( ruta );
+	}
+
+	cout << "Acción realizada de manera " << ( guardarRutas( rutas ) ? "exitosa" : "errónea" ) << endl;
+}
+
+/**
+ * Validacion de una ruta
+ */
+void realizarAccionRuta( string accion = "ELIMINAR" )
+{
+	cout << accion << " RUTA" << endl;
+
+	// Inicialización
+	vector<Ruta> rutas = listarRutas();
+	
+	if ( !rutas.empty() )
+	{
+		int id = 0;
+
+		// Solicita información
+		cout << "Digite el id de la ruta: ";
+		cin >> id;
+		cin.ignore();
+
+		bool encontrado = false;
+
+		// Busca en listado el identificador
+		for ( int i = 0; i < rutas.size(); i++ )
+		{
+			if ( encontrado = rutas[ i ].getId() == id )
+			{
+				if ( accion == "ELIMINAR" )
+				{
+					rutas.erase( rutas.begin() + i );
+					cout << "Eliminación " << ( guardarRutas( rutas ) ? "exitosa" : "errónea" ) << endl;
+				}
+
+				else
+				{
+					solicitarRuta( i, rutas );
+				}
+
+				break;
+			}
+		}
+
+		cout << ( !encontrado ? "Identificador no encontrado\n" : "" );
+	}
+}
+
+/**
+ * Submenú
+ */
+void irModuloRutas()
+{
+	int opcion = 1;
+
+	while( opcion != 0 )
+	{
+		limpiarConsola();
+		cout << "MODULO RUTAS" << endl;
+		cout << "1) Listar" << endl;
+		cout << "2) Agregar" << endl;
+		cout << "3) Editar" << endl;
+		cout << "4) Eliminar" << endl;
+		cout << "0) Regresar" << endl;
+
+		cout << "Elija opcion: ";
+		cin >> opcion;
+
+		// Limpia buffer
+		cin.ignore();
+
+		switch( opcion )
+		{
+			case 0: break;
+			
+			case 1:
+				listarRutas();
+				break;
+				
+			case 2:
+				solicitarRuta();
+				break;
+				
+			case 3:
+				realizarAccionRuta( "EDITAR" );
+				break;
+			
+			case 4:
+				realizarAccionRuta( "ELIMINAR" );
+				break;
+				
+			default:
+				cout << "No ha seleccionado opcion valida" << endl << endl;
+				break;
+		}
+
+		getchar();
 	}
 }
