@@ -9,7 +9,7 @@ using namespace std;
 
 class Reserva
 {
-	enum class Estado { ADEUDADO, PAGADO };
+	public: enum class Estado { ADEUDADO, PAGADO };
 
 	private:
 		string numero;
@@ -67,7 +67,7 @@ class Reserva
 			return this->estado;
 		}
 
-		void setEstado( Estado estado )
+		void setEstado( Estado estado = Estado::ADEUDADO )
 		{
 			this->estado = estado;
 		}
@@ -95,11 +95,14 @@ class Reserva
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString( string separador = " " )
+		string toString( string separador = " ", bool amigable = true )
 		{
 			return this->getNumero() + separador +
 				this->getFechaHora() + separador +
-				to_string( static_cast<int> ( this->getEstado() ) ) + separador +
+				( amigable ?
+					( this->getEstado() == Estado::ADEUDADO ? "Adeudado" : "Pagado" ) :
+					to_string( static_cast<int>( this->getEstado() ) )
+				) + separador +
 				this->getVuelo().toString( separador ) + separador +
 				this->getPasajero().toString( separador );
 		}
