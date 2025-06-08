@@ -95,7 +95,7 @@ class Reserva
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString( char separador = ' ' )
+		string toString( string separador = " " )
 		{
 			return this->getNumero() + separador +
 				this->getFechaHora() + separador +

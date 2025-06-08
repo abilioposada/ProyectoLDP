@@ -33,7 +33,7 @@ vector<Ruta> cargarRutas()
 			// Si la línea no está vacía
 			if ( !linea.empty() )
 			{
-				ruta.setId( stoi( linea ) );
+				ruta.setCodigo( linea );
 
 				getline( archivo, linea, ';' );
 				ruta.setOrigen( linea );
@@ -76,7 +76,7 @@ bool guardarRutas( vector<Ruta> rutas )
 	{
 		for ( Ruta ruta : rutas )
 		{
-			archivo << ruta.toString( ';' ) << endl;
+			archivo << ruta.toString( ";" ) << endl;
 		}
 		
 		// Limpia y cierra archivo de escritura
@@ -123,37 +123,92 @@ void solicitarRuta( int indice = -1, vector<Ruta> rutas = cargarRutas() )
 {
 	// Inicialización
 	string linea;
+	bool repetido = true;
 	Ruta ruta = Ruta();
 
 	cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " RUTA" << endl;
 
-	// Identificador automatizado
-	ruta.setId( indice != -1 ? rutas[ indice ].getId() : ( rutas.empty() ? 1 : rutas[ rutas.size() - 1 ].getId() + 1 ) );
-
-	cout << "Origen: ";
-	getline( cin, linea );
-	ruta.setOrigen( linea );
-
-	cout << "Destino: ";
-	getline( cin, linea );
-	ruta.setDestino( linea );
-
-	cout << "Duracion en minutos: ";
-	getline( cin, linea );
-	ruta.setDuracion( stoi( linea ) );
-
-	cout << "Tarifa en USD: ";
-	getline( cin, linea );
-	ruta.setTarifa( stof( linea ) );
-
+	// Mantiene identificador
 	if ( indice != -1 )
 	{
-		rutas[ indice ] = ruta;
+		ruta.setCodigo( rutas[ indice ].getCodigo() );
 	}
 
 	else
 	{
-		rutas.push_back( ruta );
+		// Verifica datos únicos
+		while ( repetido )
+		{
+			repetido = false;
+
+			do {
+				cout << "Codigo de ruta: ";
+				getline( cin, linea );
+				cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+			}
+			while( linea == "" );
+
+			for ( Ruta ruta : rutas )
+			{
+				if ( ruta.getCodigo() == linea )
+				{
+					cout << "Dato duplicado, vuelva a intentar" << endl;
+					repetido = true;
+					break;
+				}
+			}
+		}
+
+		ruta.setCodigo( linea );
+	}
+
+	// Origen
+	do {
+		cout << "Origen: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+
+	ruta.setOrigen( linea );
+
+	// Destino
+	do {
+		cout << "Destino: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+	
+	ruta.setDestino( linea );
+
+	// Duracion
+	do {
+		cout << "Duracion en minutos: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+	
+	ruta.setDuracion( stoi( linea ) );
+
+	// Tarifa
+	do {
+		cout << "Tarifa en USD: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+
+	ruta.setTarifa( stof( linea ) );
+
+	switch( indice )
+	{
+		// Agrega al final de la lista
+		case -1: rutas.push_back( ruta ); break;
+
+		// Reemplaza
+		default: rutas[ indice ] = ruta; break;
 	}
 
 	cout << "Acción realizada de manera " << ( guardarRutas( rutas ) ? "exitosa" : "errónea" ) << endl;
@@ -171,19 +226,21 @@ void realizarAccionRuta( string accion = "ELIMINAR" )
 	
 	if ( !rutas.empty() )
 	{
-		int id = 0;
+		string codigo = "";
+		bool encontrado = false;
 
 		// Solicita información
-		cout << "Digite el id de la ruta: ";
-		cin >> id;
-		cin.ignore();
-
-		bool encontrado = false;
+		do {
+			cout << "Digite el codigo de la ruta: ";
+			getline( cin, codigo );
+			cout << ( codigo == "" ? "Favor ingrese dato\n" : "" );
+		}
+		while( codigo == "" );
 
 		// Busca en listado el identificador
 		for ( int i = 0; i < rutas.size(); i++ )
 		{
-			if ( encontrado = rutas[ i ].getId() == id )
+			if ( encontrado = rutas[ i ].getCodigo() == codigo )
 			{
 				if ( accion == "ELIMINAR" )
 				{

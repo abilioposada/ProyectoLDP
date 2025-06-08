@@ -7,7 +7,7 @@ using namespace std;
 class Ruta
 {
 	private:
-		int id;
+		string codigo;
 		string origen;
 		string destino;
 		int duracion; // Minutos
@@ -17,9 +17,9 @@ class Ruta
 		/**
 		 * Constructor con parámetros por defecto
 		 */
-		Ruta( int id = 0, string origen = "", string destino = "", int duracion = 0, float tarifa = 0.0 )
+		Ruta( string codigo = "", string origen = "", string destino = "", int duracion = 0, float tarifa = 0.0 )
 		{
-			this->id = id;
+			this->codigo = codigo;
 			this->origen = origen;
 			this->destino = destino;
 			this->duracion = duracion;
@@ -32,14 +32,14 @@ class Ruta
 		~Ruta() {}
 
 		// Getters & setters
-		int getId()
+		string getCodigo()
 		{
-			return this->id;
+			return this->codigo;
 		}
 
-		void setId( int id )
+		void setCodigo( string codigo )
 		{
-			this->id = id;
+			this->codigo = codigo;
 		}
 
 		string getOrigen()
@@ -85,9 +85,9 @@ class Ruta
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString( char separador = ' ' )
+		string toString( string separador = " " )
 		{
-			return to_string( this->getId() ) + separador +
+			return this->getCodigo() + separador +
 				this->getOrigen() + separador +
 				this->getDestino() + separador +
 				to_string( this->getDuracion() ) + separador +

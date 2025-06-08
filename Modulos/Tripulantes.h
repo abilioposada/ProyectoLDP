@@ -158,15 +158,16 @@ void solicitarTripulante( int indice = -1, vector<Tripulante> tripulantes = carg
 		tripulante.setCodigo( linea );
 	}
 
-	// Verifica datos únicos
-	repetido = true;
-
-	while ( repetido )
-	{
+	// Documento identidad único
+	do {
 		repetido = false;
 
-		cout << "Documento Identidad: ";
-		getline( cin, linea );
+		do {
+			cout << "Documento Identidad: ";
+			getline( cin, linea );
+			cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+		}
+		while( linea == "" );
 
 		for ( Tripulante tripulante : tripulantes )
 		{
@@ -178,40 +179,57 @@ void solicitarTripulante( int indice = -1, vector<Tripulante> tripulantes = carg
 			}
 		}
 	}
+	while ( repetido );
 
 	tripulante.setDoucumentoIdentidad( linea );
 
-	cout << "Nombre completo: ";
-	getline( cin, linea );
+	// Nombre
+	do {
+		cout << "Nombre completo: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+
 	tripulante.setNombre( linea );
 
-	cout << "Nacionalidad: ";
-	getline( cin, linea );
+	// Nacionalidad
+	do {
+		cout << "Nacionalidad: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+
 	tripulante.setNacionalidad( linea );
 
-	cout << "Digite numero de rol:" << endl;
-	cout << "1. Piloto" << endl;
-	cout << "2. Copiloto" << endl;
-	cout << "3. Auxiliar" << endl;
-	cin >> linea;
+	// Rol
+	do {
+		cout << "Digite numero de rol:" << endl;
+		cout << "1. Piloto" << endl;
+		cout << "2. Copiloto" << endl;
+		cout << "3. Auxiliar" << endl;
+		
+		getline( cin, linea );
+		
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
 
 	switch ( stoi( linea ) )
 	{
 		case 1: tripulante.setRol( Tripulante::Rol::PILOTO ); break;
-
 		case 2: tripulante.setRol( Tripulante::Rol::COPILOTO ); break;
-
 		default: tripulante.setRol( Tripulante::Rol::AUXILIAR ); break;
 	};
 
-	if ( indice != -1 )
+	switch( indice )
 	{
-		tripulantes[ indice ] = tripulante;
-	}
+		// Agrega al final de la lista
+		case -1: tripulantes.push_back( tripulante ); break;
 
-	else
-	{
-		tripulantes.push_back( tripulante );
+		// Reemplaza
+		default: tripulantes[ indice ] = tripulante; break;
 	}
 
 	cout << "Accion realizada de manera " << ( guardarTripulantes( tripulantes ) ? "exitosa" : "erronea" ) << endl;
@@ -230,12 +248,15 @@ void realizarAccionTripulante( string accion = "ELIMINAR" )
 	if ( !tripulantes.empty() )
 	{
 		string codigo = "";
+		bool encontrado = false;
 
 		// Solicita información
-		cout << "Digite el codigo del tripulante: ";
-		getline( cin, codigo );
-
-		bool encontrado = false;
+		do {
+			cout << "Digite el codigo del tripulante: ";
+			getline( cin, codigo );
+			cout << ( codigo == "" ? "Favor ingrese dato\n" : "" );
+		}
+		while( codigo == "" );
 
 		// Busca en listado el identificador
 		for ( int i = 0; i < tripulantes.size(); i++ )

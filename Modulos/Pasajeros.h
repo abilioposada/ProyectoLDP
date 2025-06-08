@@ -142,8 +142,12 @@ void solicitarPasajero( int indice = -1, vector<Pasajero> pasajeros = cargarPasa
 		{
 			repetido = false;
 
-			cout << "Documento Identidad: ";
-			getline( cin, linea );
+			do {
+				cout << "Documento Identidad: ";
+				getline( cin, linea );
+				cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+			}
+			while( linea == "" );
 
 			for ( Pasajero pasajero : pasajeros )
 			{
@@ -159,26 +163,43 @@ void solicitarPasajero( int indice = -1, vector<Pasajero> pasajeros = cargarPasa
 		pasajero.setDoucumentoIdentidad( linea );
 	}
 
-	cout << "Nombre completo: ";
-	getline( cin, linea );
+	// Nombre
+	do {
+		cout << "Nombre completo: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+
 	pasajero.setNombre( linea );
 
-	cout << "Nacionalidad: ";
-	getline( cin, linea );
+	// Nacionalidad
+	do {
+		cout << "Nacionalidad: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+
 	pasajero.setNacionalidad( linea );
 
-	cout << "Número de asiento: ";
-	getline( cin, linea );
+	// Asiento
+	do {
+		cout << "Numero de asiento: ";
+		getline( cin, linea );
+		cout << ( linea == "" ? "Favor ingrese dato\n" : "" );
+	}
+	while( linea == "" );
+	
 	pasajero.setAsiento( linea );
 
-	if ( indice != -1 )
+	switch( indice )
 	{
-		pasajeros[ indice ] = pasajero;
-	}
+		// Agrega al final de la lista
+		case -1: pasajeros.push_back( pasajero ); break;
 
-	else
-	{
-		pasajeros.push_back( pasajero );
+		// Reemplaza
+		default: pasajeros[ indice ] = pasajero; break;
 	}
 
 	cout << "Acción realizada de manera " << ( guardarPasajeros( pasajeros ) ? "exitosa" : "erronea" ) << endl;
@@ -197,12 +218,15 @@ void realizarAccionPasajero( string accion = "ELIMINAR" )
 	if ( !pasajeros.empty() )
 	{
 		string documento = "";
+		bool encontrado = false;
 
 		// Solicita información
-		cout << "Digite el documento de identidad del pasajero: ";
-		getline( cin, documento );
-
-		bool encontrado = false;
+		do {
+			cout << "Digite el documento de identidad del pasajero: ";
+			getline( cin, documento );
+			cout << ( documento == "" ? "Favor ingrese dato\n" : "" );
+		}
+		while( documento == "" );
 
 		// Busca en listado el identificador
 		for ( int i = 0; i < pasajeros.size(); i++ )
