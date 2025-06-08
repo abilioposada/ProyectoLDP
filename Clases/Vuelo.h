@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Ruta.h"
-#include "Tripulacion.h"
+#include "Tripulante.h"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ class Vuelo
 		int capacidad;
 		string tipoAvion;
 		Ruta ruta;
-		vector<Tripulacion> tripulantes;
+		vector<Tripulante> tripulantes;
 
 	public:
 		/**
@@ -31,7 +31,7 @@ class Vuelo
 			int capacidad = 0,
 			string tipoAvion = "",
 			Ruta ruta = Ruta(),
-			vector<Tripulacion> tripulantes = {}
+			vector<Tripulante> tripulantes = {}
 		) {
 			this->codigo = codigo;
 			this->fechaHoraSalida = fechaHoraSalida;
@@ -108,12 +108,12 @@ class Vuelo
 			this->ruta = ruta;
 		}
 
-		vector<Tripulacion> getTripulantes()
+		vector<Tripulante> getTripulantes()
 		{
 			return this->tripulantes;
 		}
 
-		void setTripulantes( vector<Tripulacion> tripulantes )
+		void setTripulantes( vector<Tripulante> tripulantes )
 		{
 			this->tripulantes = tripulantes;
 		}
