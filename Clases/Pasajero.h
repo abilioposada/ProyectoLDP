@@ -52,7 +52,7 @@ class Pasajero : public Persona
 			return this->estado;
 		}
 
-		void setEstado( Estado estado )
+		void setEstado( Estado estado = Estado::NOVALIDADO )
 		{
 			this->estado = estado;
 		}
@@ -60,7 +60,7 @@ class Pasajero : public Persona
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString( char separador = ' ', bool amigable = true )
+		string toString( string separador = " ", bool amigable = true )
 		{
 			return Persona::toString( separador ) + separador +
 				this->getAsiento() + separador +

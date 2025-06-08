@@ -76,7 +76,7 @@ bool guardarPasajeros( vector<Pasajero> pasajeros )
 	{
 		for ( Pasajero pasajero : pasajeros )
 		{
-			archivo << pasajero.toString( ';', false ) << endl;
+			archivo << pasajero.toString( ";", false ) << endl;
 		}
 		
 		// Limpia y cierra archivo de escritura
@@ -181,7 +181,7 @@ void solicitarPasajero( int indice = -1, vector<Pasajero> pasajeros = cargarPasa
 		pasajeros.push_back( pasajero );
 	}
 
-	cout << "Acción realizada de manera " << ( guardarPasajeros( pasajeros ) ? "exitosa" : "errónea" ) << endl;
+	cout << "Acción realizada de manera " << ( guardarPasajeros( pasajeros ) ? "exitosa" : "erronea" ) << endl;
 }
 
 /**
@@ -199,7 +199,7 @@ void realizarAccionPasajero( string accion = "ELIMINAR" )
 		string documento = "";
 
 		// Solicita información
-		cout << "Digite el documento de identidad de la pasajero: ";
+		cout << "Digite el documento de identidad del pasajero: ";
 		getline( cin, documento );
 
 		bool encontrado = false;

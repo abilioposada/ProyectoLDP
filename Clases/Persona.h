@@ -60,7 +60,7 @@ class Persona
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString( char separador = ' ' )
+		string toString( string separador = " " )
 		{
 			return this->getDoucmentoIdentidad() + separador +
 				this->getNombre() + separador +
