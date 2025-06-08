@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <fstream>
 
 #include "Persona.h"
 
@@ -9,7 +8,7 @@ using namespace std;
 
 class Pasajero : public Persona
 {
-	enum class Estado { NOVALIDADO, VALIDADO };
+	public: enum class Estado { NOVALIDADO, VALIDADO };
 
 	private:
 		string asiento;
@@ -61,10 +60,13 @@ class Pasajero : public Persona
 		/**
 		 * Convierte el objeto a cadena de caracteres
 		 */
-		string toString( char separador )
+		string toString( char separador = ' ', bool amigable = true )
 		{
 			return Persona::toString( separador ) + separador +
 				this->getAsiento() + separador +
-				( this->getEstado() == Estado::VALIDADO ? "Validado" : "No validado" );
+				( amigable ?
+					( this->getEstado() == Estado::VALIDADO ? "Validado" : "No validado" ) :
+					to_string( static_cast<int>( this->getEstado() ) )
+				);
 		}
 };
