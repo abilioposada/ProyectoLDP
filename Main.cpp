@@ -16,6 +16,7 @@ int main()
 
 	while( opcion != 0 )
 	{
+		limpiarConsola();
 		cout << "MENU PRINCIPAL" << endl;
 		cout << "1) Rutas" << endl;
 		cout << "2) Pasajeros" << endl;
@@ -26,6 +27,7 @@ int main()
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
+		cin.ignore();
 
 		switch( opcion )
 		{
@@ -52,12 +54,13 @@ int main()
 				break;
 
 			default:
-				cout << "No ha seleccionado opcion valida" << endl << endl;
+				cout << "No ha seleccionado una opcion valida" << endl << endl;
 				break;
 		}
 	}
 
 	cout << "Gracias por utilizarnos" << endl;
+	getchar();
 
 	return 0;
 }
