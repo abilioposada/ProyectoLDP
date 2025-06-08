@@ -1,5 +1,7 @@
 #include <iostream>
 
+void limpiarConsola();
+
 #include "Modulos/Rutas.h"
 #include "Modulos/Pasajeros.h"
 #include "Modulos/Tripulantes.h"
@@ -58,4 +60,14 @@ int main()
 	cout << "Gracias por utilizarnos" << endl;
 
 	return 0;
+}
+
+
+void limpiarConsola()
+{
+	#ifdef _WIN32
+		system( "cls" );
+	#else
+		system( "clear" );
+	#endif
 }
