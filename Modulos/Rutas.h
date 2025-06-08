@@ -10,7 +10,7 @@
 using namespace std;
 
 /**
- * Función que carga las rutas de archivo externo
+ * Función que carga información de archivo externo
  */
 vector<Ruta> cargarRutas()
 {
@@ -51,7 +51,9 @@ vector<Ruta> cargarRutas()
 			}
 		}
 
+		// Cerrar archivo
 		archivo.close();
+		archivo.clear();
 	}
 
 	else
@@ -63,16 +65,16 @@ vector<Ruta> cargarRutas()
 }
 
 /**
- * Función que guarda las rutas en archivo externo
+ * Función que guarda información en archivo externo
  */
-bool guardarRutas( vector<Ruta> nuevasRutas )
+bool guardarRutas( vector<Ruta> rutas )
 {
 	// Abre archivo para escritura y sobreescribe
 	ofstream archivo( "Archivos/Rutas.txt" );
 	
 	if ( archivo.is_open() )
 	{
-		for ( Ruta ruta : nuevasRutas )
+		for ( Ruta ruta : rutas )
 		{
 			archivo << ruta.toString( ';' ) << endl;
 		}
@@ -89,7 +91,7 @@ bool guardarRutas( vector<Ruta> nuevasRutas )
 }
 
 /**
- * Muestra las rutas como cadena de caracteres y devuelve listado
+ * Muestra las información como cadena de caracteres y devuelve listado
  */
 vector<Ruta> listarRutas()
 {
@@ -117,16 +119,16 @@ vector<Ruta> listarRutas()
 /**
  * Solicita datos, agrega a lista y guarda cambios
  */
-void solicitarRuta( int indice = 0, vector<Ruta> rutas = cargarRutas() )
+void solicitarRuta( int indice = -1, vector<Ruta> rutas = cargarRutas() )
 {
 	// Inicialización
 	string linea;
 	Ruta ruta = Ruta();
 
-	cout << ( indice != 0 ? "EDITAR" : "AGREGAR" ) << " RUTA" << endl;
+	cout << ( indice != -1 ? "EDITAR" : "AGREGAR" ) << " RUTA" << endl;
 
-	// Auto id
-	ruta.setId( indice != 0 ? rutas[ indice ].getId() : ( rutas.empty() ? 1 : rutas[ rutas.size() - 1 ].getId() + 1 ) );
+	// Identificador automatizado
+	ruta.setId( indice != -1 ? rutas[ indice ].getId() : ( rutas.empty() ? 1 : rutas[ rutas.size() - 1 ].getId() + 1 ) );
 
 	cout << "Origen: ";
 	getline( cin, linea );
@@ -144,7 +146,7 @@ void solicitarRuta( int indice = 0, vector<Ruta> rutas = cargarRutas() )
 	getline( cin, linea );
 	ruta.setTarifa( stof( linea ) );
 
-	if ( indice != 0 )
+	if ( indice != -1 )
 	{
 		rutas[ indice ] = ruta;
 	}
@@ -158,7 +160,7 @@ void solicitarRuta( int indice = 0, vector<Ruta> rutas = cargarRutas() )
 }
 
 /**
- * Validacion de una ruta
+ * Validacion de una acción
  */
 void realizarAccionRuta( string accion = "ELIMINAR" )
 {
@@ -221,8 +223,6 @@ void irModuloRutas()
 
 		cout << "Elija opcion: ";
 		cin >> opcion;
-
-		// Limpia buffer
 		cin.ignore();
 
 		switch( opcion )
@@ -231,25 +231,28 @@ void irModuloRutas()
 			
 			case 1:
 				listarRutas();
+				getchar();
 				break;
 				
 			case 2:
 				solicitarRuta();
+				getchar();
 				break;
 				
 			case 3:
 				realizarAccionRuta( "EDITAR" );
+				getchar();
 				break;
 			
 			case 4:
 				realizarAccionRuta( "ELIMINAR" );
+				getchar();
 				break;
 				
 			default:
-				cout << "No ha seleccionado opcion valida" << endl << endl;
+				cout << "No ha seleccionado una opcion valida" << endl;
+				getchar();
 				break;
 		}
-
-		getchar();
 	}
 }
